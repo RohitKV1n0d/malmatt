@@ -149,11 +149,6 @@ class UserDetails(db.Model, UserMixin):
 
 class MyModelView(ModelView):
     can_export = True
-    column_exclude_list = ['password']
-    column_searchable_list = ['name', 'email', 'phoneNumber']
-    column_filters = ['name', 'email', 'phoneNumber']
-    column_editable_list = ['name', 'email', 'phoneNumber']
-    #export csv file
     def export_csv(self, model, **kwargs):
         return self._export_csv(model, **kwargs)
         
@@ -194,12 +189,12 @@ def register():
         userDetails = UserDetails(name=request.form['name'],password=request.form['password'],email=request.form['email'] ,profileId="TestONLY",userRole="user",gender=request.form['gender'],
                                                     dob=request.form['dob'],phoneNumber=request.form['phoneNumber'],
                                                     religion=request.form['religion'],caste=request.form['caste'])
-        try:
-            db.session.add(userDetails)
-            db.session.commit()
-            return redirect('/')
-        except:
-            return 'There was an issue adding your task'
+        # try:
+        db.session.add(userDetails)
+        db.session.commit()
+        return redirect('/')
+        # except:
+            # return 'There was an issue adding your task'
     else:   
         userDetails = UserDetails.query.order_by(UserDetails.id).all()
         return render_template('register_search.html', userDetails=userDetails)
