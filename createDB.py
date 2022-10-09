@@ -13,13 +13,12 @@ def create_admin(self):
         userDetails = APP.UserDetails(name="admin",password="admin123",email="admin123@admin.com" ,profileId="admin1",userRole="admin",gender="none",
                                                 dob="none",phoneNumber="0000000000",
                                                 religion="none",caste="none")
-        try:
-            db.session.add(userDetails)
-            db.session.commit()
-            print("Admin created")
+    
+        db.session.add(userDetails)
+        db.session.commit()
+        print("Admin created")
             
-        except:
-            print("There was an issue adding your task")
+       
 
 test_connection(self=None)
 create_admin(self=None)

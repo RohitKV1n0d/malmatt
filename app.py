@@ -61,7 +61,7 @@ login.login_view = 'login'
 def load_user(id):
     return UserDetails.query.get(int(id))
 
-
+ 
 
 
 
