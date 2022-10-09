@@ -20,3 +20,6 @@ def create_admin(self):
             
         except:
             print("There was an issue adding your task")
+
+test_connection(self=None)
+create_admin(self=None)
