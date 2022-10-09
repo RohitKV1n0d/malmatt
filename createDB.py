@@ -23,3 +23,11 @@ def create_admin(self):
 
 test_connection(self=None)
 create_admin(self=None)
+
+#function to input name
+def input_name(self):
+    name = input("Enter name: ")
+    return name
+
+input_name(self=None)
+
