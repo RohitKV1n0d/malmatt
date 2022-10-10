@@ -11,13 +11,10 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms import validators
 from wtforms.validators import InputRequired, Email, Length
-import psycopg2 as psycopg2
-import flask_excel as  excel
+
 
 
 import os
-from io import StringIO
-import csv
 
 
 
