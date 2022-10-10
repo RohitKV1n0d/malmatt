@@ -31,11 +31,11 @@ app.secret_key = 'asdaasdasdsdaadsas123241213sdasdaveasdaqvq34c'
 
 
 
-ENV = 'prod'
+ENV = 'dev'
 
 if ENV == 'dev' :
     app.debug = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///books.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///user.db'
     app.config['SECRET_KEY'] = 'asdasdasdasdasdasdasdaveqvq34c'
 
 else:

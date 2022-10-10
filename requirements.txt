@@ -27,4 +27,4 @@ texttable==1.6.4
 Werkzeug==2.2.2
 wtf-peewee==3.0.4
 WTForms==3.0.1
-xlrd==2.0.1
+xlrd==1.2.0
