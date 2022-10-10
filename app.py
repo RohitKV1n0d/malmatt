@@ -1,5 +1,5 @@
 
-from flask import Flask, Response, render_template, request, redirect, url_for
+from flask import Flask, Response, make_response, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_admin import Admin , AdminIndexView
@@ -12,9 +12,11 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms import validators
 from wtforms.validators import InputRequired, Email, Length
 import psycopg2 as psycopg2
+import flask_excel as  excel
+
 
 import os
-import io
+from io import StringIO
 import csv
 
 
@@ -29,7 +31,7 @@ app.secret_key = 'asdaasdasdsdaadsas123241213sdasdaveasdaqvq34c'
 
 
 
-ENV = 'prof'
+ENV = 'prod'
 
 if ENV == 'dev' :
     app.debug = True
@@ -56,29 +58,35 @@ db =SQLAlchemy(app)
 
 
 
-class MyModelView(ModelView):
-    can_export = True
-    export_types = ['csv', 'xls']
-    
-    def is_accessible(self):
-        return current_user.is_authenticated
+# class MyModelView( ModelView):
+#     BaseModelView.can_export = True
+#     BaseModelView.export_types = ['csv', 'xls']
 
-    def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for('login'))
+#     column_filters = ['name', 'email', 'userRole', 'profile']
+    
+#     def is_accessible(self):
+#         return current_user.is_authenticated
+
+#     def inaccessible_callback(self, name, **kwargs):
+#         return redirect(url_for('login'))
 
 
 class MyAdminIndexView(AdminIndexView):
-    can_export = True
-    export_types = ['csv', 'xls']
+    BaseModelView.can_export = True
+    BaseModelView.export_types = ['csv', 'xls']
     def is_accessible(self):
         return current_user.is_authenticated
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('login'))
 
-class MyBaseModelView(BaseModelView):
-    can_export = True
-    export_types = ['csv', 'xls']
+# class MyBaseModelView(BaseModelView):
+#     can_export = True
+#     export_types = ['csv', 'xls']
+#     BaseModelView.can_export = True
+
+
+
 
 
 admin = Admin(app, name='Admin', template_mode='bootstrap3', index_view=MyAdminIndexView())
@@ -206,7 +214,7 @@ class FilterDetails(db.Model):
     tradeSchool = db.Column(db.String(200), nullable=True)
     higerSecondary = db.Column(db.String(200), nullable=True)
     highSchool = db.Column(db.String(200), nullable=True)
-    job = db.Column(db.String(200), nullable=True)
+    #job = db.Column(db.String(200), nullable=True)
     jobCategory = db.Column(db.String(200), nullable=True)
     jobType = db.Column(db.String(200), nullable=True)
     monthlyIncome = db.Column(db.String(200), nullable=True)
@@ -221,6 +229,7 @@ class FilterDetails(db.Model):
     typeofJaathakam = db.Column(db.String(200), nullable=True)
     country = db.Column(db.String(200), nullable=True)
     youHaveOwn = db.Column(db.String(200), nullable=True)
+    landinfo = db.Column(db.String(200), nullable=True) ######
     ernakulam = db.Column(db.String(200), nullable=True)
     thiruvananthapuram = db.Column(db.String(200), nullable=True)
     kollam = db.Column(db.String(200), nullable=True)
@@ -319,41 +328,16 @@ def home():
 
 
 
-@app.route("/download_csv")
-def download_csv():
-    conn = None
-    cursor = None
 
-    try:
-        conn = psycopg2.connect(host='ec2-3-93-206-109.compute-1.amazonaws.com',
-                user='zptsxppyrnzmke',
-                password ='7cfe0ae3b6130d49be43792ade6196c8c95f877b54f769c63017fcb3103636ed',
-                port=5432)
 
-        cur = conn.cursor()
 
-        cur.execute("""CREATE TABLE class(
-            roll integer PRIMARY KEY,
-            first_name text,
-            surname text,
-            address text
-        )
-        """)
-        conn.commit()
-        cur = conn.cursor()
 
-        with open('class.csv', 'r') as f:
-            
-        # Skip the header row.
-            next(f)
-            cur.copy_from(f, 'users', sep=',')
 
-        conn.commit()
 
-        # return Response(output, mimetype="text/csv",
-        #                 headers={"Content-Disposition": "attachment;filename=report.csv"})
-    except Exception as e:
-        print(e)
+
+
+
+
 
 
 
