@@ -10,8 +10,10 @@ gunicorn==20.1.0
 itsdangerous==2.1.2
 Jinja2==3.1.2
 MarkupSafe==2.1.1
+peewee==3.15.3
 psycopg2==2.9.4
-psycopg2-binary==2.8.5
 SQLAlchemy==1.4.41
+tablib==3.2.1
 Werkzeug==2.2.2
+wtf-peewee==3.0.4
 WTForms==3.0.1

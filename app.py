@@ -1,17 +1,21 @@
 
-
-
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, Response, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from flask_admin import Admin
-from flask_admin.contrib.sqla import ModelView
+from flask_admin import Admin , AdminIndexView
+from flask_admin.model.base import BaseModelView
+from flask_admin.contrib.sqla import ModelView 
+# from flask_admin.contrib.peewee import BaseModelView
 from flask_login import UserMixin, LoginManager, login_user, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms import validators
 from wtforms.validators import InputRequired, Email, Length
+import psycopg2 as psycopg2
+
 import os
+import io
+import csv
 
 
 
@@ -25,7 +29,7 @@ app.secret_key = 'asdaasdasdsdaadsas123241213sdasdaveasdaqvq34c'
 
 
 
-ENV = 'prod'
+ENV = 'prof'
 
 if ENV == 'dev' :
     app.debug = True
@@ -49,7 +53,35 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 db =SQLAlchemy(app)
 
-admin = Admin(app, name='Admin', template_mode='bootstrap3')
+
+
+
+class MyModelView(ModelView):
+    can_export = True
+    export_types = ['csv', 'xls']
+    
+    def is_accessible(self):
+        return current_user.is_authenticated
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('login'))
+
+
+class MyAdminIndexView(AdminIndexView):
+    can_export = True
+    export_types = ['csv', 'xls']
+    def is_accessible(self):
+        return current_user.is_authenticated
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('login'))
+
+class MyBaseModelView(BaseModelView):
+    can_export = True
+    export_types = ['csv', 'xls']
+
+
+admin = Admin(app, name='Admin', template_mode='bootstrap3', index_view=MyAdminIndexView())
 
 
 
@@ -60,6 +92,7 @@ login.login_view = 'login'
 @login.user_loader
 def load_user(id):
     return UserDetails.query.get(int(id))
+
 
  
 
@@ -144,21 +177,70 @@ class UserDetails(db.Model, UserMixin):
     pState = db.Column(db.String(200), nullable=True)
     pDistrict = db.Column(db.String(200), nullable=True)
 
+
     def __repr__(self):
         return '<UserDetails %r>' % self.name
 
-class MyModelView(ModelView):
-    can_export = True
-    def export_csv(self, model, **kwargs):
-        return self._export_csv(model, **kwargs)
-        
-    def is_accessible(self):
-        return current_user.is_authenticated
 
-    def inaccessible_callback(self, name, **kwargs):
-        # redirect to login page if user doesn't have access
-        return redirect(url_for('login'))
+class FilterDetails(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    gender = db.Column(db.String(200), nullable=True)
+    height = db.Column(db.String(200), nullable=True)
+    weight = db.Column(db.String(200), nullable=True)
+    bloodtype = db.Column(db.String(200), nullable=True)
+    complexion = db.Column(db.String(200), nullable=True)
+    physcialstatus = db.Column(db.String(200), nullable=True)
+    maritalstatus = db.Column(db.String(200), nullable=True)
+    profileCreatedfor = db.Column(db.String(200), nullable=True)
+    countryCode = db.Column(db.String(200), nullable=True)
+    prefTimeToCall = db.Column(db.String(200), nullable=True)
+    religion = db.Column(db.String(200), nullable=True)
+    christianCaste = db.Column(db.String(200), nullable=True)
+    hinduCaste = db.Column(db.String(200), nullable=True)
+    muslimCaste = db.Column(db.String(200), nullable=True)
+    higestEducation = db.Column(db.String(200), nullable=True)
+    doc = db.Column(db.String(200), nullable=True)
+    master = db.Column(db.String(200), nullable=True)
+    bachelors = db.Column(db.String(200), nullable=True)
+    diploma = db.Column(db.String(200), nullable=True)
+    tradeSchool = db.Column(db.String(200), nullable=True)
+    higerSecondary = db.Column(db.String(200), nullable=True)
+    highSchool = db.Column(db.String(200), nullable=True)
+    job = db.Column(db.String(200), nullable=True)
+    jobCategory = db.Column(db.String(200), nullable=True)
+    jobType = db.Column(db.String(200), nullable=True)
+    monthlyIncome = db.Column(db.String(200), nullable=True)
+    eatingHabits = db.Column(db.String(200), nullable=True)
+    drinkingHabits = db.Column(db.String(200), nullable=True)
+    smokingHabits = db.Column(db.String(200), nullable=True)
+    languagesKnown = db.Column(db.String(200), nullable=True)
+    hobbies = db.Column(db.String(200), nullable=True)
+    intrests = db.Column(db.String(200), nullable=True)
+    star =  db.Column(db.String(200), nullable=True)
+    raasi = db.Column(db.String(200), nullable=True)
+    typeofJaathakam = db.Column(db.String(200), nullable=True)
+    country = db.Column(db.String(200), nullable=True)
+    youHaveOwn = db.Column(db.String(200), nullable=True)
+    ernakulam = db.Column(db.String(200), nullable=True)
+    thiruvananthapuram = db.Column(db.String(200), nullable=True)
+    kollam = db.Column(db.String(200), nullable=True)
+    pathanamthitta = db.Column(db.String(200), nullable=True)
+    alappuzha = db.Column(db.String(200), nullable=True)
+    kottayam = db.Column(db.String(200), nullable=True)
+    idukki = db.Column(db.String(200), nullable=True)
+    thrissur = db.Column(db.String(200), nullable=True)
+    palakkad = db.Column(db.String(200), nullable=True)
+    malappuram = db.Column(db.String(200), nullable=True)
+    kozhikode = db.Column(db.String(200), nullable=True)
+    wayanad = db.Column(db.String(200), nullable=True)
+    kannur = db.Column(db.String(200), nullable=True)
+    kasaragod = db.Column(db.String(200), nullable=True)
 
+    def __repr__(self):
+        return '<FilterDetails %r>' % self.name
+
+
+    
 
 
 
@@ -166,6 +248,15 @@ class MyModelView(ModelView):
 
 
 admin.add_view(ModelView(UserDetails, db.session))
+admin.add_view(ModelView(FilterDetails, db.session))
+
+
+    
+
+
+
+
+
 
 
 class LoginForm(FlaskForm):
@@ -223,7 +314,46 @@ def logout():
 @app.route('/home')
 @login_required
 def home():
-    return render_template('index.html')
+    return render_template('blank.html')
+
+
+
+
+@app.route("/download_csv")
+def download_csv():
+    conn = None
+    cursor = None
+
+    try:
+        conn = psycopg2.connect(host='ec2-3-93-206-109.compute-1.amazonaws.com',
+                user='zptsxppyrnzmke',
+                password ='7cfe0ae3b6130d49be43792ade6196c8c95f877b54f769c63017fcb3103636ed',
+                port=5432)
+
+        cur = conn.cursor()
+
+        cur.execute("""CREATE TABLE class(
+            roll integer PRIMARY KEY,
+            first_name text,
+            surname text,
+            address text
+        )
+        """)
+        conn.commit()
+        cur = conn.cursor()
+
+        with open('class.csv', 'r') as f:
+            
+        # Skip the header row.
+            next(f)
+            cur.copy_from(f, 'users', sep=',')
+
+        conn.commit()
+
+        # return Response(output, mimetype="text/csv",
+        #                 headers={"Content-Disposition": "attachment;filename=report.csv"})
+    except Exception as e:
+        print(e)
 
 
 
